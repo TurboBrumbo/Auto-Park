@@ -4,6 +4,7 @@ import random
 from faker import Faker
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import MinMaxScaler
 
 def load_dataset(filepath):
     df = pd.read_csv(filepath)
@@ -62,13 +63,22 @@ def predict_next_service_date(cars_df):
     X = train_data[features]
     y = train_data['Days_Since_Last_Service']
 
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+    scaler = MinMaxScaler()
+    X_scaled = scaler.fit_transform(X)
+
+    X_train, X_test, y_train, y_test = train_test_split(X_scaled, y, test_size=0.2, random_state=42)
 
     model = RandomForestRegressor(n_estimators=100, random_state=42)
     model.fit(X_train, y_train)
 
-    predicted_days = model.predict(X).astype(int)
+    predict_data = scaler.transform(cars_df.loc[cars_df['Need_Maintenance'] == 1, features])
+    predicted_days = model.predict(predict_data).astype(int)
     cars_df.loc[cars_df['Need_Maintenance'] == 1, 'Next_Service_Days'] = predicted_days
+
+    last_service_dates = pd.Timestamp.now() - pd.to_timedelta(cars_df['Days_Since_Last_Service'], unit='days')
+    next_service_dates = last_service_dates + pd.to_timedelta(cars_df['Next_Service_Days'], unit='days')
+    cars_df['Next_Service_Date'] = next_service_dates.dt.strftime('%Y-%m-%d')
+    cars_df.loc[cars_df['Need_Maintenance'] == 0, 'Next_Service_Date'] = "-"
 
     return cars_df
 
@@ -90,13 +100,13 @@ def generate_rating_dataset(trips_df):
     return rating_df
 
 if __name__ == "__main__":
-    cars_filepath = 'vehicle_maintenance_data.csv'  # Обновите путь к файлу, если требуется
+    cars_filepath = 'vehicle_maintenance_data.csv'
     cars_df = load_dataset(cars_filepath)
 
     cars_df = predict_next_service_date(cars_df)
 
-    columns = [col for col in cars_df.columns if col not in ['Need_Maintenance', 'Next_Service_Days']]
-    columns += ['Need_Maintenance', 'Next_Service_Days']
+    columns = [col for col in cars_df.columns if col not in ['Next_Service_Date', 'Need_Maintenance', 'Next_Service_Days']]
+    columns += ['Need_Maintenance', 'Next_Service_Days', 'Next_Service_Date']
     cars_df = cars_df[columns]
 
     cars_df.to_csv('cars_dataset.csv', index=False, encoding='utf-8')
@@ -110,4 +120,3 @@ if __name__ == "__main__":
     rating_df.to_csv('rating_dataset.csv', index=False, encoding='utf-8')
 
     print("Датасеты успешно созданы и сохранены: cars_dataset.csv, trips_dataset.csv и rating_dataset.csv.")
-
