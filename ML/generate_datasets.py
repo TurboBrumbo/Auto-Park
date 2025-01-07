@@ -110,3 +110,4 @@ if __name__ == "__main__":
     rating_df.to_csv('rating_dataset.csv', index=False, encoding='utf-8')
 
     print("Датасеты успешно созданы и сохранены: cars_dataset.csv, trips_dataset.csv и rating_dataset.csv.")
+
