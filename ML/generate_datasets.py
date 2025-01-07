@@ -3,6 +3,7 @@ import numpy as np
 import random
 from faker import Faker
 from sklearn.ensemble import RandomForestRegressor
+from sklearn.model_selection import train_test_split
 
 def load_dataset(filepath):
     df = pd.read_csv(filepath)
@@ -58,15 +59,16 @@ def predict_next_service_date(cars_df):
         "Mileage", "Vehicle_Age", "Fuel_Efficiency", "Service_History", "Accident_History",
         "Tire_Condition", "Brake_Condition", "Battery_Status", "Days_Since_Last_Service"
     ]
-    X_train = train_data[features]
-    y_train = train_data['Days_Since_Last_Service'] + np.random.randint(30, 180, size=len(train_data))
+    X = train_data[features]
+    y = train_data['Days_Since_Last_Service']
+
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
     model = RandomForestRegressor(n_estimators=100, random_state=42)
     model.fit(X_train, y_train)
 
-    predict_data = cars_df[cars_df['Need_Maintenance'] == 1][features]
-    predictions = model.predict(predict_data)
-    cars_df.loc[cars_df['Need_Maintenance'] == 1, 'Next_Service_Days'] = predictions
+    predicted_days = model.predict(X).astype(int)
+    cars_df.loc[cars_df['Need_Maintenance'] == 1, 'Next_Service_Days'] = predicted_days
 
     return cars_df
 
