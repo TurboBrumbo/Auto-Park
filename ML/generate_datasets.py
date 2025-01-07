@@ -5,6 +5,8 @@ from faker import Faker
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import MinMaxScaler
+import joblib
+import os
 
 def load_dataset(filepath):
     df = pd.read_csv(filepath)
@@ -71,6 +73,8 @@ def predict_next_service_date(cars_df):
     model = RandomForestRegressor(n_estimators=100, random_state=42)
     model.fit(X_train, y_train)
 
+    joblib.dump(model, 'service_date_model.joblib')
+
     predict_data = scaler.transform(cars_df.loc[cars_df['Need_Maintenance'] == 1, features])
     predicted_days = model.predict(predict_data).astype(int)
     cars_df.loc[cars_df['Need_Maintenance'] == 1, 'Next_Service_Days'] = predicted_days
@@ -100,6 +104,8 @@ def generate_rating_dataset(trips_df):
     return rating_df
 
 if __name__ == "__main__":
+    os.makedirs('datasets', exist_ok=True)
+
     cars_filepath = 'vehicle_maintenance_data.csv'
     cars_df = load_dataset(cars_filepath)
 
@@ -109,14 +115,14 @@ if __name__ == "__main__":
     columns += ['Need_Maintenance', 'Next_Service_Days', 'Next_Service_Date']
     cars_df = cars_df[columns]
 
-    cars_df.to_csv('cars_dataset.csv', index=False, encoding='utf-8')
+    cars_df.to_csv('datasets/cars_dataset.csv', index=False, encoding='utf-8')
 
     trips_df = generate_trips_dataset(cars_df)
 
-    trips_df.to_csv('trips_dataset.csv', index=False, encoding='utf-8')
+    trips_df.to_csv('datasets/trips_dataset.csv', index=False, encoding='utf-8')
 
     rating_df = generate_rating_dataset(trips_df)
 
-    rating_df.to_csv('rating_dataset.csv', index=False, encoding='utf-8')
+    rating_df.to_csv('datasets/rating_dataset.csv', index=False, encoding='utf-8')
 
-    print("Датасеты успешно созданы и сохранены: cars_dataset.csv, trips_dataset.csv и rating_dataset.csv.")
+    print("Датасеты успешно созданы и сохранены в папке datasets: cars_dataset.csv, trips_dataset.csv и rating_dataset.csv.")
