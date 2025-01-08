@@ -8,8 +8,7 @@ import os
 
 def generate_russian_license_plate():
     letters = "ABEKMHOPCTYX"
-    region = random.randint(1, 199)
-    plate = f"{random.choice(letters)}{random.randint(100, 999)}{random.choice(letters)}{random.choice(letters)}{region:02d}"
+    plate = f"{random.choice(letters)}{random.randint(100, 999)}{random.choice(letters)}{random.choice(letters)}"
     return plate
 
 def load_dataset(filepath):
@@ -27,13 +26,13 @@ def load_dataset(filepath):
     df['Days_Since_Last_Service'] = (pd.Timestamp.now() - df['Last_Service_Date']).dt.days
     df['Days_To_Warranty_Expiry'] = (df['Warranty_Expiry_Date'] - pd.Timestamp.now()).dt.days
 
+    df.insert(0, 'ID', [generate_russian_license_plate() for _ in range(len(df))])
+
     features = [
-        "Car_ID", "License_Plate", "Mileage", "Vehicle_Age", "Fuel_Efficiency", "Service_History", "Accident_History",
+        "ID", "Mileage", "Vehicle_Age", "Fuel_Efficiency", "Service_History", "Accident_History",
         "Reported_Issues", "Tire_Condition", "Brake_Condition", "Battery_Status", "Days_Since_Last_Service"
     ]
 
-    df.insert(0, 'Car_ID', range(1, len(df) + 1))
-    df['License_Plate'] = [generate_russian_license_plate() for _ in range(len(df))]
     df = df[features]
 
     return df
@@ -45,16 +44,15 @@ def generate_trips_dataset(cars_df):
 
     trips = []
     for driver_id, driver_name in drivers.items():
-        car_ids = np.random.choice(range(1, 101), size=100, replace=True)  # ID машин от 1 до 100
-        for car_id in car_ids:
+        ids = np.random.choice(cars_df['ID'], size=100, replace=True)  # ID машин с номерами
+        for id in ids:
             trip_length = round(random.uniform(1.0, 30.0), 1)
             rating = random.choices([1, 2, 3, 4, 5], weights=[5, 5, 10, 40, 40])[0]
             trip_date = faker.date_between(start_date=pd.Timestamp("2024-01-01"), end_date=pd.Timestamp("2024-12-31"))
-            license_plate = cars_df.loc[cars_df['Car_ID'] == car_id, 'License_Plate'].values[0]
-            trips.append([driver_id, driver_name, car_id, license_plate, trip_length, trip_date, rating])
+            trips.append([driver_id, driver_name, id, trip_length, trip_date, rating])
 
     trips_df = pd.DataFrame(trips, columns=[
-        'Driver_ID', 'Driver_Name', 'Car_ID', 'License_Plate', 'Trip_Length_km', 'Trip_Date', 'Trip_Rating'
+        'Driver_ID', 'Driver_Name', 'ID', 'Trip_Length_km', 'Trip_Date', 'Trip_Rating'
     ])
 
     return trips_df
@@ -65,14 +63,13 @@ def generate_rating_dataset(trips_df):
 
     for driver_id in driver_ids:
         driver_trips = trips_df[trips_df['Driver_ID'] == driver_id]
-        avg_trip_length = round(driver_trips['Trip_Length_km'].mean(), 2)
         experience_years = random.randint(1, 40)
-        fines = random.choices([0, random.randint(1, 50)], weights=[6, 4])[0]
+        driver_age = random.randint(20, 55)
         driver_name = driver_trips.iloc[0]['Driver_Name']
-        rating_data.append([driver_id, driver_name, avg_trip_length, experience_years, fines])
+        rating_data.append([driver_id, driver_name, experience_years, driver_age])
 
     rating_df = pd.DataFrame(rating_data, columns=[
-        'Driver_ID', 'Driver_Name', 'Avg_Trip_Length_km', 'Experience_Years', 'Total_Fines'
+        'Driver_ID', 'Driver_Name', 'Experience_Years', 'Driver_Age'
     ])
 
     return rating_df
@@ -102,7 +99,6 @@ if __name__ == "__main__":
     train_model(full_cars_df)
 
     sample_cars_df = full_cars_df.sample(n=100, random_state=42).reset_index(drop=True)
-    sample_cars_df['Car_ID'] = range(1, 101)
 
     sample_cars_df.to_csv('datasets/cars_dataset.csv', index=False, encoding='utf-8')
 
@@ -113,3 +109,4 @@ if __name__ == "__main__":
     rating_df.to_csv('datasets/rating_dataset.csv', index=False, encoding='utf-8')
 
     print("Датасеты успешно созданы и сохранены в папке datasets.")
+
