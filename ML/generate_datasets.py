@@ -65,11 +65,10 @@ def generate_rating_dataset(trips_df):
         driver_trips = trips_df[trips_df['Driver_ID'] == driver_id]
         experience_years = random.randint(1, 40)
         driver_age = random.randint(20, 55)
-        driver_name = driver_trips.iloc[0]['Driver_Name']
-        rating_data.append([driver_id, driver_name, experience_years, driver_age])
+        rating_data.append([experience_years, driver_age])
 
     rating_df = pd.DataFrame(rating_data, columns=[
-        'Driver_ID', 'Driver_Name', 'Experience_Years', 'Driver_Age'
+        'Experience_Years', 'Driver_Age'
     ])
 
     return rating_df
