@@ -1,0 +1,64 @@
+{% extends 'main/layout.html' %}
+
+{% block title %}Данные об автомобиле{% endblock %}
+
+{% block content %}
+<div class="features">
+    <h1>Данные об автомобиле</h1>
+    <h2>Прогнозируемое количество дней до следующего ТО: {{ extra_qs }} </h2>
+    <table class="table">
+        <tbody>
+            <tr>
+                <td><b>Id</b></td>
+                <td>{{ car.id }}</td>
+            </tr>
+            <tr>
+                <td><b>Mileage</b></td>
+                <td>{{ car.mileage }}</td>
+            </tr>
+            <tr>
+                <td><b>Age</b></td>
+                <td>{{ car.vehicle_age }}</td>
+            </tr>
+            <tr>
+                <td><b>Issues</b></td>
+                <td>{{ car.reported_issues }}</td>
+            </tr>
+            <tr>
+                <td><b>Fuel efficiency</b></td>
+                <td>{{ car.fuel_efficiency }}</td>
+            </tr>
+            <tr>
+                <td><b>Service history</b></td>
+                <td>{{ car.service_history }}</td>
+            </tr>
+            <tr>
+                <td><b>Accidents</b></td>
+                <td>{{ car.accident_history }}</td>
+            </tr>
+            <tr>
+                <td><b>Tire condition</b></td>
+                <td>{{ car.tire_condition }}</td>
+            </tr>
+            <tr>
+                <td><b>Brake condition</b></td>
+                <td>{{ car.brake_condition }}</td>
+            </tr>
+            <tr>
+                <td><b>Battery status</b></td>
+                <td>{{ car.battery_status }}</td>
+            </tr>
+            <tr>
+                <td><b>Since last service</b></td>
+                <td>{{ car.days_since_last_service }}</td>
+            </tr>
+            <tr>
+                <td><b>To warranty expire</b></td>
+                <td>{{ car.days_to_warranty_expire }}</td>
+            </tr>
+        </tbody>
+    </table>
+    <a href="{% url 'car_delete' car.id %}" class="btn btn-danger">Удалить</a>
+    <a href="{% url 'car_update' car.id %}" class="btn btn-info">Редактировать</a>
+</div>
+{% endblock %}
