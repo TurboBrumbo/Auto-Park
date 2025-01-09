@@ -1,0 +1,31 @@
+{% extends 'main/layout.html' %}
+
+{% block title %}Данные о водителе{% endblock %}
+
+{% block content %}
+<div class="features">
+    <h1>Данные о водителе</h1>
+    <table class="table">
+        <tbody>
+            <tr>
+                <td><b>Id</b></td>
+                <td>{{ driver.id }}</td>
+            </tr>
+            <tr>
+                <td><b>Initials</b></td>
+                <td>{{ driver.initials }}</td>
+            </tr>
+            <tr>
+                <td><b>Age</b></td>
+                <td>{{ driver.age }}</td>
+            </tr>
+            <tr>
+                <td><b>Experience</b></td>
+                <td>{{ driver.experience }}</td>
+            </tr>
+        </tbody>
+    </table>
+    <a href="{% url 'driver_delete' driver.id %}" class="btn btn-danger">Удалить</a>
+    <a href="{% url 'driver_update' driver.id %}" class="btn btn-info">Редактировать</a>
+</div>
+{% endblock %}

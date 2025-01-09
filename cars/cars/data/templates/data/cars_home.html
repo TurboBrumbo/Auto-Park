@@ -1,0 +1,39 @@
+{% extends 'main/layout.html' %}
+
+{% block title %}Автомобили{% endblock %}
+
+{% block content %}
+<a href="{% url 'cars_download' %}" class="btn btn-info">Скачать датасет</a>
+<div class="features">
+    <h1>Автомобили</h1>
+    {% if cars %}
+        <table class="table">
+            <tr>
+                <th>Id</th>
+                <th>Mileage</th>
+                <th>Age</th>
+                <th>Issues</th>
+                <th>Fuel efficiency</th>
+                <th>Accidents</th>
+                <th>Since last service</th>
+                <th>To warranty expire</th>
+            </tr>
+            {% for car in cars %}
+                <tr>
+                    <td>{{ car.id }}</td>
+                    <td>{{ car.mileage }}</td>
+                    <td>{{ car.vehicle_age }}</td>
+                    <td>{{ car.reported_issues }}</td>
+                    <td>{{ car.fuel_efficiency }}</td>
+                    <td>{{ car.accident_history }}</td>
+                    <td>{{ car.days_since_last_service }}</td>
+                    <td>{{ car.days_to_warranty_expire }}</td>
+                    <td><a href="{% url 'car_details' car.id %}" class="btn btn-warning">Просмотреть все поля</a></td>
+                </tr>
+            {% endfor %}
+        </table>
+    {% else %}
+        <p>У вас нет записей!</p>
+    {% endif %}
+</div>
+{% endblock %}
