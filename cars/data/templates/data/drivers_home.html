@@ -1,11 +1,11 @@
 {% extends 'main/layout.html' %}
 
-{% block title %}Автомобили{% endblock %}
+{% block title %}Водители{% endblock %}
 
 {% block content %}
 <a href="{% url 'drivers_download' %}" class="btn btn-info">Скачать датасет</a>
 <div class="features">
-    <h1>Автомобили</h1>
+    <h1>Водители</h1>
     {% if drivers %}
         <table class="table">
             <tr>
@@ -20,7 +20,7 @@
                     <td>{{ driver.initials }}</td>
                     <td>{{ driver.age }}</td>
                     <td>{{ driver.experience }}</td>
-                    <td><a href="{% url 'driver_details' driver.id %}" class="btn btn-warning">Просмотреть все поля</a></td>
+                    <td><a href="{% url 'driver_details' driver.id %}" class="btn btn-warning">Детальнее</a></td>
                 </tr>
             {% endfor %}
         </table>

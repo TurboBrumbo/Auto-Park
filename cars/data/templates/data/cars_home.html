@@ -28,7 +28,7 @@
                     <td>{{ car.accident_history }}</td>
                     <td>{{ car.days_since_last_service }}</td>
                     <td>{{ car.days_to_warranty_expire }}</td>
-                    <td><a href="{% url 'car_details' car.id %}" class="btn btn-warning">Просмотреть все поля</a></td>
+                    <td><a href="{% url 'car_details' car.id %}" class="btn btn-warning">Детальнее</a></td>
                 </tr>
             {% endfor %}
         </table>

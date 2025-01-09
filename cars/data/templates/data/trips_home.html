@@ -22,7 +22,7 @@
                     <td>{{ trip.length }}</td>
                     <td>{{ trip.date }}</td>
                     <td>{{ trip.rating }}</td>
-                    <td><a href="{% url 'trip_details' trip.id %}" class="btn btn-warning">Просмотреть все поля</a></td>
+                    <td><a href="{% url 'trip_details' trip.id %}" class="btn btn-warning">Детальнее</a></td>
                 </tr>
             {% endfor %}
         </table>
